@@ -15,6 +15,10 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
+# The ubi-openjdk image has a JAVA_HOME defined that is not working, change it here to something that works for nifi.
+JAVA_HOME=/usr/lib/jvm/jre
+export JAVA_HOME
+
 scripts_dir='/opt/nifi/scripts'
 
 [ -f "${scripts_dir}/common.sh" ] && . "${scripts_dir}/common.sh"
