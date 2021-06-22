@@ -40,8 +40,13 @@ ADD repo/RPM-GPG-KEY-EPEL-8 /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-8
 
 RUN mkdir -p ${NIFI_BASE_DIR} && microdnf install -y jq xmlstarlet procps curl && microdnf clean all
 
-#USER nifi
+# Make image Openshift compatible
+RUN chgrp -R 0 /opt && \
+    chmod -R g=u /opt && \
+    chown -R 1001 /opt/nifi
 
+USER 1001
+#
 # Download, validate, and expand Apache NiFi Toolkit binary.
 RUN curl -fSL ${MIRROR_BASE_URL}/${NIFI_TOOLKIT_BINARY_PATH} -o ${NIFI_BASE_DIR}/nifi-toolkit-${NIFI_VERSION}-bin.zip \
     && echo "$(curl ${BASE_URL}/${NIFI_TOOLKIT_BINARY_PATH}.sha256) *${NIFI_BASE_DIR}/nifi-toolkit-${NIFI_VERSION}-bin.zip" | sha256sum -c - \
@@ -93,12 +98,6 @@ RUN curl -L -o "nifi-ngsi-cassandra-nar-${NIFI_NGSI_NAR_VERSION}.nar" "https://g
 RUN curl -L -o "nifi-ngsi-dynamo-nar-${NIFI_NGSI_NAR_VERSION}.nar" "https://github.com/ging/fiware-draco/releases/download/${DRACO_RELEASE}/nifi-ngsi-dynamo-nar-${NIFI_NGSI_NAR_VERSION}.nar"\
 	&& cp ./nifi-ngsi-dynamo-nar-${NIFI_NGSI_NAR_VERSION}.nar ${NIFI_BASE_DIR}/nifi-${NIFI_VERSION}/lib/nifi-ngsi-dynamo-nar-${NIFI_NGSI_NAR_VERSION}.nar
 
-# Make image Openshift compatible
-RUN chgrp -R 0 /opt && \
-    chmod -R g=u /opt && \
-    chown -R 1001 /opt/nifi
-
-USER 1001
 # Apply configuration and start NiFi
 #
 # We need to use the exec form to avoid running our command in a subshell and omitting signals,
