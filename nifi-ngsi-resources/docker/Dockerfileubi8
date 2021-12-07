@@ -1,4 +1,5 @@
-FROM  registry.access.redhat.com/ubi8/openjdk-8-runtime:latest
+# FROM  registry.access.redhat.com/ubi8/openjdk-8-runtime:latest
+FROM registry.access.redhat.com/ubi8/openjdk-8-runtime:1.10-11
 LABEL maintainer="Johnny Westerlund<jwesterl@redhat.com>"
 LABEL site="https://github.com/johwes/fiware-draco"
 
@@ -68,7 +69,8 @@ RUN curl -fSL ${MIRROR_BASE_URL}/${NIFI_BINARY_PATH} -o ${NIFI_BASE_DIR}/nifi-${
     && mkdir -p ${NIFI_HOME}/provenance_repository \
     && mkdir -p ${NIFI_HOME}/state \
     && mkdir -p ${NIFI_LOG_DIR} \
-    && ln -s ${NIFI_HOME} ${NIFI_BASE_DIR}/nifi-${NIFI_VERSION}
+    && ln -s ${NIFI_HOME} ${NIFI_BASE_DIR}/nifi-${NIFI_VERSION} \
+    && chmod -R g=u ${NIFI_HOME}
 
 #VOLUME ${NIFI_LOG_DIR} \
 #       ${NIFI_HOME}/conf \
